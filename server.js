@@ -1,11 +1,13 @@
 const express = require("express");
 const fs = require("fs");
 const notes = require("./db/db.json");
-const path = require("path");
+
 const uuid = require("uuid");
+const path = require("path");
+
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.port || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -16,11 +18,17 @@ app.get("/api/notes", (req, res) => {
 });
 
 app.post("/api/notes", (req, res) => {
-    const notes = JSON.parse(fs.readFileSync("/db/db.json"));
+    // get current notes
+    const notes = JSON.parse(fs.readFileSync("./db/db.json"));
+    // get new note
     const newNotes = req.body;
-    newNotes.id = uuid.v4();
-    notes.push(newNotes);
-    fs.writeFileSync("/db/db.json", JSON.stringify(notes))
+    // add a new porp called id to new note
+    newNotes.id = uuid.v4(); //uuid gens a unique id 
+    // add new note to array of notes
+    notes.push(newNotes); 
+    // overite old file w/ new info
+    fs.writeFileSync("./db/db.json", JSON.stringify(notes))
+    // send back all notes
     res.json(notes);
 })
 
@@ -40,5 +48,5 @@ app.get("/notes", function (req, res) {
 });
 
 app.listen(PORT, function () {
-    constole.log("Listening on Port " + PORT);
+    console.log("Listening on Port " + PORT);
 });
